@@ -1,0 +1,184 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>IFE JavaScript Task 01</title>
+        <script type="text/javascript" src="js/21.js"></script>
+        <script type="text/javascript">
+            //将输入的内容分割成数组
+            function splitText(text){
+                var TextArray = [];
+                TextArray = (text).split(/[,，;；、\s\n]+/);
+                return TextArray;
+            }
+            //对str进行trim
+            function trim(str) {
+                var regex1 = /^\s*/;
+                var regex2 = /\s*$/;
+                return (str.replace(regex1, "")).replace(regex2, "");
+            }
+            //编写对象
+            function Queue(container,haveDel){
+                //创建新数组储存数据
+                this.str = [];
+                //写入函数
+                this.paint = function(){
+                    //定义插入字符串
+                    var str = "";
+                    this.str.forEach(function(e){
+                        str += ("<div>" + e + "</div>")
+                    });
+                    container.innerHTML = str;
+                    //如果需要加删除选项
+                    if(haveDel) addDivDelEvent(this, container);
+                }
+
+                //插入函数
+                this.leftPush = function(obj) {
+                    if (obj.length) {
+                        this.str.unshift(obj);
+                        this.paint();
+                    }
+                };
+                this.rightPush = function(obj) {
+                    if (obj.length) {
+                        this.str.push(obj);
+                        this.paint();
+                    }
+                };
+                this.isEmpty = function() {
+                    return (this.str.length == 0);
+                };
+                this.leftPop = function() {
+                    if (!this.isEmpty()) {
+                        this.str.shift();
+                        this.paint();
+                    }
+                    else {
+                        alert("The queue is already empty!");
+                    }
+                };
+                this.rightPop = function() {
+                    if (!this.isEmpty()) {
+                        this.str.pop();
+                        this.paint();
+                    }
+                    else {
+                        alert("The queue is already empty!");
+                    }
+                };
+
+                //删除指定div
+                this.deleteID = function(id){
+                    this.str.splice(id, 1);
+                    this.paint();
+                }
+            }
+
+            //为每个div添加删除选项
+            function addDivDelEvent(Queue,container){
+                var oldText = [];
+                for(var i=0;i<container.childNodes.length;i++){
+                    //储存老数据
+                    oldText.push(container.childNodes[i].innerHTML);
+                    //添加事件(闭包)
+                    addEvent(container.childNodes[i], "click", function(n){
+                        return function(){return Queue.deleteID(n)}
+                    }(i));
+                    addEvent(container.childNodes[i], "mouseover", function(n) {
+                        return function(){container.childNodes[n].style.background = "green"; container.childNodes[n].innerHTML = "删除" + oldText[n] + "?";};
+                    }(i));
+                    addEvent(container.childNodes[i], "mouseout", function(n) {
+                        return function(){container.childNodes[n].style.background = "red"; container.childNodes[n].innerHTML = oldText[n];};
+                    }(i));
+                }
+            }
+            //实际调用
+            window.onload = function(){
+                var tagContainer = document.getElementById("tag-container");
+                var tagInput = document.getElementById("tag-input");
+                var hobbyContainer = document.getElementById("hobby-container");
+                var hobbyButton = document.getElementById("hobby-submit");
+                var hobbyInput = document.getElementById("hobby-input");
+
+                //实例1(有删除)
+                var tagQueue = new Queue(tagContainer,true);
+                //实例2(无删除)
+                var hobbyQueue = new Queue(hobbyContainer,false);
+
+                //绑定按键
+                addEvent(tagInput, "keyup", function(e){
+                    if(/[,，;；、\s\n]/.test(tagInput.value) || e.keyCode === 13){
+                        var handledData = splitText(trim(tagInput.value));
+                        var data = handledData[0];
+                        if(tagQueue.str.indexOf(data) === -1){
+                            tagQueue.rightPush(data);
+                            if(tagQueue.str.length > 10){
+                                tagQueue.leftPop();
+                            }
+                        }
+                        tagQueue.paint();
+                        tagInput.value = "";
+                    }
+                });
+
+                addEvent(hobbyButton, "click", function(e){
+                    var inputArray = splitText(trim(hobbyInput.value));
+                    inputArray.forEach(function(e){
+                        if(hobbyQueue.str.indexOf(e) === -1){
+                            hobbyQueue.rightPush(e);
+                            if(hobbyQueue.str.length > 10){
+                                hobbyQueue.leftPop();
+                            }
+                        }
+                    });
+                    hobbyQueue.paint();
+                });
+            }
+        </script>
+    
+        <style>
+            #tag-container div {
+                display: inline-block;
+                font-size: 30px;
+                text-align: center;
+                padding: 0 15px;
+                margin: 2px 0;
+                margin-right: 10px;
+                height: 50px;
+                line-height: 50px;                
+                background-color: red;
+                color: #FFFFFF;
+                border-radius: 10px;
+            }
+            
+            #hobby-container div {
+                display: inline-block;
+                font-size: 30px;
+                text-align: center;
+                padding: 0 15px;
+                margin: 2px 0;
+                margin-right: 10px;
+                height: 50px;
+                line-height: 50px;                
+                background-color: red;
+                color: #FFFFFF;
+                border-radius: 10px;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div>InputTag:<input type="text" id="tag-input"></div>
+        <br>
+
+        <div id="tag-container"></div>
+
+        <textarea id="hobby-input" rows="5" cols="30">codding javascript css;dota，dota2,ow、csgo</textarea>
+        <br>
+
+        <input type="button" id="hobby-submit" value="确认兴趣爱好">
+        <br>
+        <div id="hobby-container"></div>
+    </body>
+</html>  

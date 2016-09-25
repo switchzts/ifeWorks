@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>IFE TASK 18</title>
+  <style type="text/css">
+    #container div {
+      display: inline-block;
+      font-size: 30px;
+      text-align: center;
+      padding: 0 15px;
+      margin: 2px 0;
+      margin-right: 10px;
+      height: 50px;
+      line-height: 50px;                
+      background-color: red;
+      color: #FFFFFF;
+    }
+  </style>
+  <script type="text/javascript">
+    //遍历数组方法
+    function each(arr,fn) {
+    	for (var i = 0;i < arr.length;i++){
+    		fn(arr[i],i);
+    	}
+    }
+    window.onload = function(){
+    	var cont = document.getElementById('container');
+    	var btns = document.getElementsByTagName('input');
+    	var str = [];
+    	var reg = /^[0-9]+$/;
+
+    	//渲染函数
+    	function paint(){
+    		var strr = "";
+    		each(str,function(item){
+    			strr +=("<div>" + parseInt(item) + "</div>")
+    		});
+    		container.innerHTML = strr;
+    		addDivDelEvent();
+    	}
+
+    	function leftPush(num){
+    		str.unshift(num);
+    		paint();
+    	}
+
+
+    	function rightPush(num){
+    		str.push(num);
+    		paint();
+    	}
+
+
+    	function leftPop(){
+    		if(str.length !== 0){
+    			str.shift()
+    			paint();
+    		}
+    		else alert("The queue is already empty!");
+    	}
+
+
+    	function rightPop(){
+    		if(str.length !== 0){
+    			str.pop()
+    			paint();
+    		}
+    		else alert("The queue is already empty!");
+    	}
+
+    	function deleteID(id){
+    		console.log(id);
+            str.splice(id, 1);
+            paint();
+    	}
+
+    	function addDivDelEvent(){
+    		for(var i=0;i<container.childNodes.length;i++){
+    			container.childNodes[i] = i;
+    			container.childNodes[i].onclick = function(){
+    				deleteID(i);
+    			}
+    		}
+    	}
+
+    	btns[1].onclick = function(){
+    		var input = btns[0].value;
+    		if(reg.test(input)){
+    			leftPush(input);
+    		}
+    		else alert("请输入数字");
+    	};
+
+    	btns[2].onclick = function(){
+    		var input = btns[0].value;
+    		if(reg.test(input)){
+    			rightPush(input);
+    		}
+    		else alert("请输入数字");
+    	};
+
+    	btns[3].onclick = function(){
+    		leftPop();
+    	};
+
+    	btns[4].onclick = function(){
+    		rightPop();
+    	};
+    }
+  </script>
+</head>
+<body>
+  <input id="num-input" type="text">
+  <input type="button" value="左侧入">
+  <input type="button" value="右侧入" style="margin-right: 25px">
+  <input type="button" value="左侧出">
+  <input type="button" value="右侧出">
+
+  <div id="container"></div>
+</body>
+</html>
